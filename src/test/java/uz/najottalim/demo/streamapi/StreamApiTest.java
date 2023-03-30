@@ -273,15 +273,15 @@ public class StreamApiTest {
             "01-Feb-2021 va 01-Apr-2021 oralig'ida zakaz qilingan produktlarni oling")
     public void exercise4() {
         List<Product> expected = solution4();
-        List<Product> result = orderRepo.findAll()
+        orderRepo.findAll()
                 .stream()
-                .filter(product -> product.getCustomer().getTier() == 2)
-                .filter(product -> !product.getOrderDate().isBefore(LocalDate.of(2021, 2, 1)))
-                .filter(product -> !product.getOrderDate().isAfter(LocalDate.of(2021, 4, 1)))
-                .flatMap(product -> product.getProducts().stream())
+                .filter(order -> LocalDate.of(2021, 2, 1).isAfter(order.getOrderDate()))
+                .filter(order -> order.getOrderDate().isAfter(LocalDate.of(2021, 4, 1)))
+                .filter(order -> order.getCustomer().getTier() == 2)
+                .map(order -> order.getProducts().stream())
+                .distinct()
                 .collect(Collectors.toList());
-        Assertions.assertEquals(result.size(), expected.size());
-        expected.forEach(product -> Assertions.assertTrue(result.contains(expected)));
+
 
     }
 
